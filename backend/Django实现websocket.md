@@ -281,3 +281,7 @@ Django 本身不支持websocket，需要安装第三方插件。
 7. 至此一个基础的Django-websocket框架就搭建好了
 
    ```
+   python3 manage.py runserver
+   ```
+
+   
