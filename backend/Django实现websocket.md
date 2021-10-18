@@ -284,4 +284,23 @@ Django 本身不支持websocket，需要安装第三方插件。
    python3 manage.py runserver
    ```
 
+
+
+## Vue 3.x 项目构建
+
+1. 创建vue3.x项目
+
+   ``` vue
+   vue create project_name
+   
+   // 自定义配置，vue版本选择3.x
+   ```
+
+2. 引入element ui、vuetify两个组件库
+
+   ``` 
+   vue add element-plus
+   vue add vuetify
+   ```
+
    

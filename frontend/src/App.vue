@@ -1,30 +1,85 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div id="app" @click="clickHandler">
+    <router-view v-wechat-title="$route.meta.title" />
   </div>
-  <router-view/>
 </template>
+<script>
+/* eslint-disable */
 
+export default {
+  // 全局解决element UI button 点击后不失焦的问题
+  // 但是部分组件里面的按钮由于没有冒泡，所以仍无法解决
+  methods: {
+    clickHandler(ev) {
+      if (ev.target.nodeName == "SPAN" || ev.target.nodeName == "I") {
+        ev.target.parentNode.blur();
+      }
+      if (ev.target.nodeName == "BUTTON") {
+        ev.target.blur();
+      }
+    }
+  }
+};
+</script>
 <style>
+body,
+html,
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
 }
 
-#nav {
-  padding: 30px;
+/* 全局修改消息提示框样式 */
+.el-message {
+  top: 4% !important;
+  min-width: 5em !important;
+  padding: 0.5em !important;
+  /* border-radius: 0 !important; */
+  background: white !important;
+}
+.el-message .el-message__content {
+  font-size: 1em;
+}
+.el-message--error,
+.el-message--error .el-message__content,
+.el-message .el-icon-error {
+  color: red !important;
+  border-color: red !important;
+}
+.el-message--success,
+.el-message--success .el-message__content,
+.el-message .el-icon-success {
+  color: #00aa00 !important;
+  border-color: #00aa00 !important;
+}
+.el-message--warning,
+.el-message--warning .el-message__content,
+.el-message .el-icon-warning {
+  color: #EE7700 !important;
+  border-color: #EE7700 !important;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+/* 全局修改级联选择器样式 */
+.el-cascader-panel .el-radio {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.el-cascader-panel .el-radio__input {
+  visibility: hidden;
+}
+.el-cascader-panel .el-cascader-node__postfix {
+  top: 10px;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+/* 全局设置下拉框最大高度 */
+.el-select-dropdown__list {
+  max-height: 15em;
+  overflow: auto;
 }
 </style>
