@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # 添加导包路径。参数 0 表示路径插入的位置，实际上path本身是一个路径字符串构成的列表
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -28,7 +28,7 @@ SECRET_KEY = 'b520(7^$*sr3g(41^uirjbcyqy0l51gmwii_t!4#u79lnlsa($'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -40,12 +40,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
+    'rest_framework',
     'channels',
 
-    'chatroom'
+    'chatroom',
+    'users',
+    'const'
 ]
 
 MIDDLEWARE = [
+    # 解决跨域的中间件
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,8 +87,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
+        'HOST': '121.4.47.229',  # 数据库主机
+        'PORT': 3300,  # 数据库端口
+        'USER': 'root',  # 数据库用户名
+        'PASSWORD': 'zm_123456',  # 数据库用户密码
+        'NAME': 'chatroom'  # 数据库名字
     }
 }
 
@@ -108,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -122,4 +133,25 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # ****************自定义配置*****************
+# 指定用户模型类
+AUTH_USER_MODEL = 'users.User'
+
+# CORS添加跨域白名单
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+
+# asgi配置
 ASGI_APPLICATION = 'backend.asgi.application'
+
+# 配置基于redis实现channel layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": ["redis://:zm_123456@121.4.47.229:6330/10"]
+        }
+    }
+}

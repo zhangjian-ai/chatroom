@@ -286,21 +286,118 @@ Django 本身不支持websocket，需要安装第三方插件。
 
 
 
-## Vue 3.x 项目构建
+## Vue 2.x 项目构建
+
+Vue 3.x问题稍多，再过一年再用。
 
 1. 创建vue3.x项目
 
-   ``` vue
+   ``` shell
    vue create project_name
    
-   // 自定义配置，vue版本选择3.x
+   // 自定义配置，vue版本选择2.x
    ```
 
-2. 引入element ui、vuetify两个组件库
+2. 引入vuetify组件库
 
-   ``` 
-   vue add element-plus
+   相对 element-ui 更花里胡哨的组件库。
+
+   ```shell
+   cd project_name
    vue add vuetify
+   
+   # 其他配置，为了使用vuetify的组件样式，将项目的App.vue中，<router-view/> 放到<v-app>标签中
    ```
+
+   官方文档：https://vuetifyjs.com/zh-Hans/getting-started/installation/
 
    
+
+## Channels Layers 实现多人聊天
+
+- Settings.py 文件配置
+
+  - 基于内存实现channels layers
+
+    ```python
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+    ```
+
+  - 基于redis实现channel layers
+
+    安装第三方插件：
+
+    ```python
+    pip3 install channels-redis
+    ```
+
+    配置settings
+
+    ```python
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": ["redis://:password@121.4.47.229:6330/10"]
+            }
+        }
+    }
+    ```
+
+- consumers.py文件修改
+
+  ```python
+  from channels.generic.websocket import WebsocketConsumer
+  from channels.exceptions import StopConsumer
+  from asgiref.sync import async_to_sync
+  
+  
+  class ChatConsumer(WebsocketConsumer):
+      def websocket_connect(self, message):
+          # 客户端向服务端发送websocket连接请求时，自动触发。
+          # 服务端允许客户端创建连接
+          self.accept()
+  
+          # 获取url参数中的group
+          group = self.scope['url_route']['kwargs'].get('group')
+  
+          # 将客户端连接对象加入到channel-layer
+          # 将异步的channel-layer转成同步方法
+          if group:
+              async_to_sync(self.channel_layer.group_add)(group, self.channel_name)
+  
+      def websocket_receive(self, message):
+          # 服务器也可以主动断开连接
+          if message['text'] == 'exit':
+              self.close()
+              # 主动引发断开异常，将不再调用websocket_disconnect
+              raise StopConsumer
+  
+          # 获取url参数中的group
+          group = self.scope['url_route']['kwargs'].get('group')
+  
+          # 客户端基于websocket向服务器发送数据时，自动触发本方法。
+          if group:
+              async_to_sync(self.channel_layer.group_send)(group, {"type": "call", "msg": message})
+  
+      def call(self, event):
+          """回调函数，实现向客户端发送消息"""
+          text = event['msg']['text']
+          self.send(text)
+  
+      def websocket_disconnect(self, message):
+          # 获取url参数中的group
+          group = self.scope['url_route']['kwargs'].get('group')
+  
+          # 某个客户端断开连接时，将其从group中删除
+          async_to_sync(self.channel_layer.group_discard)(group, self.channel_name)
+  
+          # 客户端与服务器断开连接时，自动触发。
+          raise StopConsumer
+  ```
+
+  

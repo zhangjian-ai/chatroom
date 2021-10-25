@@ -14,7 +14,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 
 from . import routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings.dev')
 
 # application = get_asgi_application()
 
