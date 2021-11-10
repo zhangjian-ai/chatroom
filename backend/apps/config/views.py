@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from backend.libs.configure import *
+from backend.utils.configure import *
 
 
 class Constance(APIView):

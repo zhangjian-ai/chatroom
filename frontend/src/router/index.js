@@ -13,6 +13,14 @@ const routes = [
     }
   },
   {
+    path: '/cars',
+    name: 'Cars',
+    component: () => import('../views/cars.vue'),
+    meta: {
+      title: "汽车之家-新闻"
+    }
+  },
+  {
     path: '/',
     name: 'Index',
     component: () => import('../views/index.vue'),

@@ -90,6 +90,7 @@ export default {
 }
 .v-form {
   padding: 1em 2em 2em;
+  background-color: whitesmoke;
 }
 .v-btn {
   margin: 0 1em;

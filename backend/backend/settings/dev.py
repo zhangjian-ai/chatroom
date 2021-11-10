@@ -14,6 +14,8 @@ import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from elasticsearch import Elasticsearch
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # 添加导包路径。参数 0 表示路径插入的位置，实际上path本身是一个路径字符串构成的列表
@@ -46,7 +48,8 @@ INSTALLED_APPS = [
 
     'chatroom',
     'users',
-    'const'
+    'config',
+    'es'
 ]
 
 MIDDLEWARE = [
@@ -155,3 +158,7 @@ CHANNEL_LAYERS = {
         }
     }
 }
+
+# ES对象
+ES = Elasticsearch(hosts=["121.4.47.229:9200"], http_auth=("elastic", "Zj1340026934"))
+

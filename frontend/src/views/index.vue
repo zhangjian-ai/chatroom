@@ -1,24 +1,24 @@
 <template>
   <div>
-    <v-app-bar app>
-      <v-row>
-        <v-col cols="7">
-          <v-img max-height="60" max-width="400" src="@/assets/banner.gif"></v-img>
-        </v-col>
-        <v-col cols="2">
-          <p class="user" v-show="$store.state.status">欢迎回来【{{ $store.state.nickname }}】</p>
-        </v-col>
-        <v-col cols="3">
-          <v-btn
-            :disabled="$store.state.status"
-            color="blue"
-            text
-            @click="loginDialog = !loginDialog"
-          >登陆</v-btn>
-          <v-btn :disabled="$store.state.status" text @click="logonDialog = !logonDialog">注册</v-btn>
-          <v-btn :disabled="!$store.state.status" text @click="$store.commit('setUserInfo')">注销</v-btn>
-        </v-col>
-      </v-row>
+    <v-app-bar app dense src="@/assets/banner.png">
+      <v-col offset-md="7" offset-sm="5" sm="3" md="2" align-self="center">
+        <p class="user" v-show="$store.state.status">欢迎回来【{{ $store.state.nickname }}】</p>
+      </v-col>
+      <v-col sm="4" md="3" align-self="center">
+        <v-btn
+          :disabled="$store.state.status"
+          color="white"
+          text
+          @click="loginDialog = !loginDialog"
+        >登陆</v-btn>
+        <v-btn
+          :disabled="$store.state.status"
+          text
+          color="white"
+          @click="logonDialog = !logonDialog"
+        >注册</v-btn>
+        <v-btn :disabled="!$store.state.status" text @click="$store.commit('setUserInfo')">注销</v-btn>
+      </v-col>
     </v-app-bar>
     <v-main>
       <v-container fluid>
@@ -31,46 +31,73 @@
           <logon :show.sync="logonDialog"></logon>
         </v-dialog>
         <!-- 聊天室 -->
-        <v-row class="fill-height" align="center">
+        <v-card>
+          <v-app-bar dense color="blue">
+            <v-toolbar-title>
+              <v-icon color="white">mdi-message-text</v-icon>聊天室
+            </v-toolbar-title>
+          </v-app-bar>
           <template v-for="(item, i) in items">
-            <v-col :key="i" cols="12" md="3">
+            <v-col :key="i" sm="4" md="3">
               <v-hover v-slot="{ hover }">
-                <v-card :elevation="hover ? 12 : 2" :class="{ 'on-hover': hover }">
+                <v-card :elevation="hover ? 10 : 2" id="item">
                   <v-img :src="item.img" height="12em">
-                    <v-card-title class="text-h6 red--text">
-                      <v-row class="fill-height flex-column" justify="space-between">
-                        <p class="mt-4 subheading text-left">{{ item.title }}</p>
-                        <div>
-                          <p
-                            class="ma-0 text-body-1 font-weight-bold font-italic text-left"
-                          >{{ item.text }}</p>
-                          <p
-                            class="text-caption font-weight-medium font-italic text-left"
-                          >{{ item.subtext }}</p>
-                        </div>
-
-                        <div class="align-self-center">
-                          <v-btn
-                            :class="{ 'show-btns': hover }"
-                            :color="transparent"
-                            icon
-                            @click="$router.push({path: '/chat_room', query: {id: 123}})"
-                          >
-                            <v-icon :class="{ 'show-btns': hover }" :color="transparent">mdi-play</v-icon>
-                          </v-btn>
-                        </div>
-                      </v-row>
-                    </v-card-title>
+                    <v-col>
+                      <p id="room-title">{{ item.title }}</p>
+                      <div id="room-desc">
+                        <p>{{ item.text }}</p>
+                        <p>{{ item.subtext }}</p>
+                      </div>
+                      <v-btn
+                        class="in-btn"
+                        icon
+                        @click="$router.push({path: '/chat_room', query: {id: 123}})"
+                      >
+                        <v-icon :class="{ 'show-btns': hover }" :color="transparent">mdi-play</v-icon>
+                      </v-btn>
+                    </v-col>
                   </v-img>
                 </v-card>
               </v-hover>
             </v-col>
           </template>
-        </v-row>
+        </v-card>
         <!-- 工作流 -->
+        <v-card>
+          <v-app-bar dense color="grey">
+            <v-toolbar-title>
+              <v-icon color="orange">mdi-stack-overflow</v-icon>工作流
+            </v-toolbar-title>
+          </v-app-bar>
+        </v-card>
+        <!-- 汽车之家 -->
+        <v-card>
+          <v-app-bar dense color="green">
+            <v-toolbar-title>
+              <v-icon color="white">mdi-car-side</v-icon>汽车之家
+            </v-toolbar-title>
+          </v-app-bar>
+          <v-col sm="4" md="3">
+            <v-hover v-slot="{ hover }">
+              <v-card :elevation="hover ? 10 : 2" id="item">
+                <v-img src="@/assets/car.jpeg" height="12em">
+                  <v-col>
+                    <p id="room-title">机车新闻</p>
+                    <div id="room-desc">
+                      <p>资讯广场</p>
+                      <p>领略全球最前沿的汽车科技...</p>
+                    </div>
+                    <v-btn class="in-btn" icon @click="$router.push({path: '/cars'})">
+                      <v-icon :class="{ 'show-btns': hover }" :color="transparent">mdi-play</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-img>
+              </v-card>
+            </v-hover>
+          </v-col>
+        </v-card>
       </v-container>
     </v-main>
-
     <v-footer app></v-footer>
   </div>
 </template>
@@ -102,34 +129,41 @@ export default {
     login,
     logon
   },
-
   mounted() {
     this.$store.dispatch("loadConstance");
   }
 };
 </script>
 <style scoped>
-.v-app-bar .v-btn {
-  margin-top: 1em !important;
+.v-banner {
+  margin-bottom: 1em;
 }
-
-.v-card {
+.v-card:not([id="item"]) {
+  margin: 2em 0;
+}
+.v-card[id="item"] {
   transition: opacity 0.4s ease-in-out;
 }
-
-.v-card:not(.on-hover) {
+.v-card[id="item"]:not(:hover) {
   opacity: 0.6;
 }
-
+#room-title {
+  font: bolder;
+  font-size: 1.5em;
+  color: red;
+}
+#room-desc p {
+  margin: 0;
+  color: whitesmoke;
+}
+.in-btn {
+  position: relative;
+  left: 40%;
+  top: 1em;
+}
 .show-btns {
   color: rgba(255, 255, 255, 1) !important;
 }
-
-/deep/ .v-dialog {
-  position: relative;
-  z-index: 10000 !important;
-}
-
 .user {
   margin-top: 1.2em !important;
   min-width: 8em;
