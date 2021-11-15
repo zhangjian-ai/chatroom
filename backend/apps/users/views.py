@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from .serializers import LogonSerializer
 from .models import User
-from backend.utils.token import create_jwt_token
+from backend.utils.helper import create_jwt_token
 
 
 class LogonView(CreateAPIView):

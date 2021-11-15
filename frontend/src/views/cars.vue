@@ -2,16 +2,19 @@
   <v-app>
     <v-app-bar app hide-on-scroll>
       <v-toolbar dark color="teal">
-        <v-col offset-md="2" offset-sm="0" md="1">
+        <v-col offset-md="2" md="1">
           <v-toolbar-title>Search</v-toolbar-title>
         </v-col>
-        <v-col md="6" sm="8" align-self="auto">
-          <v-text-field
-            v-model="search"
+        <v-col md="6" sm="8" class="mx-4">
+          <v-combobox
+            :search-input.sync="search"
             :loading="loading"
-            label="What are you want to search?"
-            flat
-          ></v-text-field>
+            :items="advices"
+            hide-no-data
+            hide-details
+            item-color="green"
+            label="What are you want to konw?"
+          ></v-combobox>
         </v-col>
         <v-col md="2">
           <span>约 {{ count }} 条信息</span>
@@ -19,7 +22,7 @@
       </v-toolbar>
     </v-app-bar>
     <v-main>
-      <v-col md="10" offset-lg="1" lg="10" id="news" ref="news">
+      <v-col offset-md="1" md="10" offset-lg="2" lg="8" id="news" ref="news">
         <v-card>
           <v-tabs v-model="index" background-color="primary" dark>
             <v-tab v-for="tab in tabs" :key="tab.title">{{ tab.title }}</v-tab>
@@ -65,7 +68,7 @@
   </v-app>
 </template>
 <script>
-import { esNewsSearch } from "@/api";
+import { esNewsSearch, esNewsSuggest } from "@/api";
 
 export default {
   data() {
@@ -86,13 +89,17 @@ export default {
       ],
 
       // 定时器
-      timer: null,
+      search_timer: null,
+      suggest_timer: null,
 
       // loading
       loading: false,
 
       // 搜索条件
       search: "",
+
+      // 搜索建议
+      advices: [],
 
       // 新闻列表
       source: [],
@@ -104,10 +111,16 @@ export default {
     };
   },
   methods: {
-    queryState(content, tag) {
+    // 查询
+    newsSearch() {
       // 加载中
       this.loading = true;
-      esNewsSearch(content, tag, this.page, this.size).then(res => {
+      esNewsSearch(
+        this.search,
+        this.tabs[this.index].content,
+        this.page,
+        this.size
+      ).then(res => {
         // 加载完成
         this.loading = false;
         this.count = res.data.hits.total.value;
@@ -121,36 +134,55 @@ export default {
       });
     },
 
-    debounce(content, tag, func, wait) {
-      // 防抖
-      if (this.timer !== null) {
-        clearTimeout(this.timer);
+    // 建议词条
+    newsSuggest() {
+      esNewsSuggest(this.search).then(res => {
+        this.advices = res.data.suggest;
+      });
+    },
+
+    // 搜索防抖
+    search_debounce(wait) {
+      if (this.search_timer !== null) {
+        clearTimeout(this.search_timer);
       }
-      this.timer = setTimeout(() => {
-        func(content, tag);
+      this.search_timer = setTimeout(() => {
+        this.newsSearch();
+      }, wait);
+    },
+
+    // 建议防抖
+    suggest_debounce(wait) {
+      if (this.suggest_timer !== null) {
+        clearTimeout(this.suggest_timer);
+      }
+      this.suggest_timer = setTimeout(() => {
+        this.newsSuggest();
       }, wait);
     }
   },
 
   watch: {
     search(val) {
-      if (val) {
+      // val.trim() 去除字符串两边的空格
+      if (val && val.trim()) {
         this.page = 1;
-        this.debounce(val, this.tabs[this.index].content, this.queryState, 500);
+        this.search_debounce(600);
+        this.suggest_debounce(200);
       }
     },
-    index(val) {
+    index() {
       // 切换标签时，page重置
       this.page = 1;
-      this.debounce(this.search, this.tabs[val].content, this.queryState, 200);
+      this.newsSearch();
     },
     page() {
-      this.queryState(this.search, this.tabs[this.index].content);
+      this.newsSearch();
     }
   },
 
   mounted() {
-    this.queryState(this.search, this.tabs[this.index].content);
+    this.newsSearch();
   }
 };
 </script>
@@ -161,9 +193,6 @@ export default {
 }
 .sub_card {
   margin: 2em 0;
-}
-.v-text-field {
-  margin-top: 1em !important;
 }
 .summary {
   padding: 1em 0;

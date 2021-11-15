@@ -159,6 +159,3 @@ CHANNEL_LAYERS = {
     }
 }
 
-# ES对象
-ES = Elasticsearch(hosts=["121.4.47.229:9200"], http_auth=("elastic", "Zj1340026934"))
-

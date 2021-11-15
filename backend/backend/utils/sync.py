@@ -23,11 +23,18 @@ def news_to_es():
                               "properties": {
                                   "title": {
                                       "type": "text",
-                                      "analyzer": "ik_max_word"
+                                      "analyzer": "ik_max_word",
+                                      "search_analyzer": "ik_max_word",
+                                      "fields": {
+                                          "suggest": {
+                                              "type": "completion",
+                                              "analyzer": "ik_max_word",
+                                              "search_analyzer": "ik_max_word"
+                                          }
+                                      }
                                   },
                                   "summary": {
                                       "type": "text",
-                                      "analyzer": "ik_max_word"
                                   },
                                   "detail_url": {
                                       "type": "text"
@@ -39,13 +46,16 @@ def news_to_es():
                                       "type": "keyword"
                                   }
                               }
+                          },
+                          settings={
+                              "max_result_window": 99999999
                           })
 
     # 查询临时表，如果有数据就开始同步
     res = pool.query_one(sql="select count(*) count from chatroom.news_temp;")
     if res.get("count"):
         offset = 0
-        num = 10
+        num = 20
 
         # 按照每一百条一次来同步
         print("开始同步")

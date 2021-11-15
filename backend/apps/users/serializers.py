@@ -3,7 +3,7 @@ import re
 from rest_framework import serializers
 
 from .models import User
-from backend.utils.token import create_jwt_token
+from backend.utils.helper import create_jwt_token
 
 
 class LogonSerializer(serializers.ModelSerializer):

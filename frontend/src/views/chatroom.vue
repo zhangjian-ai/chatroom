@@ -130,6 +130,9 @@ export default {
 
           div.appendChild(p);
           document.getElementById("hall").appendChild(div);
+
+          // 客户端同步关闭
+          this.disConnection();
         }
       };
 

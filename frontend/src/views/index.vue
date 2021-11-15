@@ -1,23 +1,28 @@
 <template>
   <div>
     <v-app-bar app dense src="@/assets/banner.png">
-      <v-col offset-md="7" offset-sm="5" sm="3" md="2" align-self="center">
+      <v-col offset-md="8" offset-sm="6" sm="3" md="2" align-self="center">
         <p class="user" v-show="$store.state.status">欢迎回来【{{ $store.state.nickname }}】</p>
       </v-col>
       <v-col sm="4" md="3" align-self="center">
         <v-btn
-          :disabled="$store.state.status"
+          v-show="!$store.state.status"
           color="white"
           text
           @click="loginDialog = !loginDialog"
         >登陆</v-btn>
         <v-btn
-          :disabled="$store.state.status"
+          v-show="!$store.state.status"
           text
           color="white"
           @click="logonDialog = !logonDialog"
         >注册</v-btn>
-        <v-btn :disabled="!$store.state.status" text @click="$store.commit('setUserInfo')">注销</v-btn>
+        <v-btn
+          v-show="$store.state.status"
+          text
+          color="white"
+          @click="$store.commit('setUserInfo')"
+        >注销</v-btn>
       </v-col>
     </v-app-bar>
     <v-main>
@@ -38,7 +43,7 @@
             </v-toolbar-title>
           </v-app-bar>
           <template v-for="(item, i) in items">
-            <v-col :key="i" sm="4" md="3">
+            <v-col :key="i" sm="4" md="3" lg="2">
               <v-hover v-slot="{ hover }">
                 <v-card :elevation="hover ? 10 : 2" id="item">
                   <v-img :src="item.img" height="12em">
@@ -77,7 +82,7 @@
               <v-icon color="white">mdi-car-side</v-icon>汽车之家
             </v-toolbar-title>
           </v-app-bar>
-          <v-col sm="4" md="3">
+          <v-col sm="4" md="3" lg="2">
             <v-hover v-slot="{ hover }">
               <v-card :elevation="hover ? 10 : 2" id="item">
                 <v-img src="@/assets/car.jpeg" height="12em">
@@ -167,5 +172,6 @@ export default {
 .user {
   margin-top: 1.2em !important;
   min-width: 8em;
+  color: white;
 }
 </style>

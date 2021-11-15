@@ -112,4 +112,38 @@ es = Elasticsearch(hosts=["121.4.47.229:9200"], http_auth=("elastic", "Zj1340026
 #
 # print(es.indices.delete(index="cars_news"))
 
-print(es.search(index="cars_news", query={"match_phrase": {"title": "SUV"}}, filter_path="hits", from_=20, size=100))
+# print(es.search(index="cars_news", query={"match_phrase": {"title": "SUV"}}, filter_path="hits", from_=20, size=100))
+
+# suggest = {
+#     "my_suggest": {
+#         "text": "new",
+#         "term": {
+#             "field": "tag"
+#         }
+#     }
+# }
+#
+# query = {
+#     "match": {
+#         "title": "宝马"
+#     }
+# }
+#
+# print(es.search(index="cars_news", suggest=suggest, query=query, filter_path=["suggest"]))
+
+suggest = {
+    "news_suggest": {
+        "prefix": "宝马",
+        "completion": {
+            "field": "title.suggest",
+            "skip_duplicates": True,
+            "fuzzy": {
+                "fuzziness": 2,
+                "min_length": 3,
+                "prefix_length": 2
+            }
+        }
+    }
+}
+
+print(es.search(index="cars_news", suggest=suggest, filter_path=["suggest.news_suggest"]))
