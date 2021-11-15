@@ -20,4 +20,6 @@ Vue组件库：vuetify
 
 ## 搜索模块 search
 
-进度：待开发
+进度：已完成
+
+介绍：基于elasticsearch实现大数据关键字搜索，同时实现搜索匹配建议
