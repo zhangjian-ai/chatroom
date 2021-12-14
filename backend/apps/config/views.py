@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from backend.utils.configure import *
+from backend.utils.configure import ITEMS
 
 
 class Constance(APIView):
@@ -10,13 +10,16 @@ class Constance(APIView):
     def get(self, request):
         """获取常量配置"""
         data = dict()
-        grade = list()
-        for item in GRADE:
-            grade.append({
-                "id": item[0],
-                "text": item[1]
-            })
+        for key in ITEMS:
+            data.setdefault(key.lower(), [])
 
-        data['grade'] = grade
+            if key.lower() in ("grade",):
+                for item in ITEMS[key]:
+                    data[key.lower()].append({
+                        "id": item[0],
+                        "text": item[1]
+                    })
+            else:
+                data[key.lower()] = ITEMS[key]
 
         return Response(data)

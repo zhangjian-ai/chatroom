@@ -222,20 +222,27 @@ Django 本身不支持websocket，需要安装第三方插件。
 4. 修改asgi.py文件
 
    ```python
+   # 这一句很重要！！！开发环境不需要，但是 通过 daphne 部署asgi时一定要加上。否则会出现报错。
+   from .wsgi import *  
+   
    import os
+   import django
    
    from django.core.asgi import get_asgi_application
-   from channels.routing import ProtocolTypeRouter, URLRouter
    
-   from . import routing
+   from channels.routing import ProtocolTypeRouter, URLRouter, get_default_application
    
-   os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+   from .routing import urlpatterns
+   
+   
+   # 配置文件上线时需要修改为线上配置文件
+   os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings.prod')
+   django.setup()
    
    # application = get_asgi_application()
-   
-   application = ProtocolTypeRouter({  # 通过协议类型分发路由
+   application = ProtocolTypeRouter({
        'http': get_asgi_application(),
-       'websocket': URLRouter(routing.websocket_urlpatterns)
+       'websocket': URLRouter(urlpatterns)
    })
    ```
 

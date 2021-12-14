@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'chatroom',
     'users',
     'config',
-    'es'
+    'es',
+    'file'
 ]
 
 MIDDLEWARE = [
@@ -91,7 +92,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
-        'HOST': '121.4.47.229',  # 数据库主机
+        'HOST': '101.43.61.175',  # 数据库主机
         'PORT': 3300,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'zm_123456',  # 数据库用户密码
@@ -120,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -154,8 +155,28 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": ["redis://:zm_123456@121.4.47.229:6330/10"]
+            "hosts": ["redis://:zm_123456@101.43.61.175:6330/15"]
         }
     }
 }
 
+# 缓存中间件redis配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://101.43.61.175:6330/14",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "zm_123456",
+            "DECODE_RESPONSES": True
+        },
+    },
+}
+
+
+# FastDFS 配置
+FDFS_URL = 'http://101.43.61.175:8888/'
+FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'backend/utils/fastdfs/client.conf')
+
+# 指定自定义的django文件存储类
+DEFAULT_FILE_STORAGE = 'backend.utils.fastdfs.FastDFSStorage.FastDFSStorage'

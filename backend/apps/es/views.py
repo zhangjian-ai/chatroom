@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-ES = Elasticsearch(hosts=["121.4.47.229:9200"], http_auth=("elastic", "Zj1340026934"))
+ES = Elasticsearch(hosts=["101.43.61.175:9200"], http_auth=("elastic", "Zj1340026934"))
 
 
 class EsNewsSearchView(APIView):
